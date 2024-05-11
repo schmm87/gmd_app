@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,7 +10,7 @@ void main() {
     providers: [
       ChangeNotifierProvider<PostProvider>(create: (_) => PostProvider())
     ],
-    child: MyApp(),
+    child: const MyApp(),
   ));
 }
 
@@ -36,21 +37,20 @@ class Post {
 class ApiService {
   Future<List<Post>> getPosts(context) async {
     late List<Post> posts = [];
+    var logger = Logger();
     try {
       final response = await http.get(
         Uri.parse('https://jsonplaceholder.typicode.com/posts'),
       );
       if (response.statusCode == 200) {
         final body = json.decode(response.body);
-        //final List list = json.decode(body['data']);
-        //final list = body['data'].map<Post>((e) => Post.fromJson(e)).toList();
         posts = body.map<Post>((e)=> Post.fromJson(e)).toList();
-       // posts.addAll(list);
+        logger.i('API Daten erhalten. Count: ${posts.length}');
       } else {
-        print('Error Occurred');
+        logger.e('API Zugriff fehlerhaft ${response.statusCode}');
       }
     } catch (e) {
-      print('Error Occurred' + e.toString());
+      logger.e('API Zugriff fehlerhaft: $e');
     }
     return posts;
   }
@@ -124,7 +124,6 @@ class PostListView extends StatefulWidget {
 class _PostListViewState extends State<PostListView> {
   @override
   Widget build(BuildContext context) {
-    final postProvider = Provider.of<PostProvider>(context);
 
     return Scaffold(
         appBar: AppBar(
@@ -166,8 +165,8 @@ class _PostListViewState extends State<PostListView> {
         return Card(
           child: Column(children: [
             ListTile(
-              title: Text("${item.title}"),
-              subtitle: Text("${item.body}"),
+              title: Text(item.title),
+              subtitle: Text(item.body),
             ),
           ]),
         );
