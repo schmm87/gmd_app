@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "781400144376",
+    "project_id": "gmdapp-2fc8a",
+    "storage_bucket": "gmdapp-2fc8a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781400144376:android:0f9f959265cefa1bef7e0d",
+        "android_client_info": {
+          "package_name": "com.example.gmd_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrSmSW7yMeQBS5ZKE59oSaKsAMlxM7jCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
