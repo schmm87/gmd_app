@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gmd_app/main.dart';
 import 'package:provider/provider.dart';
 
 import '../models/post.dart';
