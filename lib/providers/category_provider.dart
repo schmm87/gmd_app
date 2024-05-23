@@ -4,13 +4,13 @@ import 'package:firebase_database/firebase_database.dart'; // Firebase Realtime 
 import 'package:flutter/material.dart'; // Flutter Material Design Komponenten
 import 'package:logger/logger.dart'; // Logging-Bibliothek
 
-import '../models/post.dart'; // Datenmodell für Post
+import '../models/category.dart'; // Datenmodell für Category
 
-/// Ein Provider für Posts, der mit der ChangeNotifier-Klasse von Flutter arbeitet.
-/// Er verwaltet eine Liste von Posts, die aus der Firebase Realtime Database abgerufen werden.
-class PostProvider with ChangeNotifier {
-  /// Liste der Posts, die angezeigt werden sollen
-  late List<Post> posts = [];
+/// Ein Provider für Category, der mit der ChangeNotifier-Klasse von Flutter arbeitet.
+/// Er verwaltet eine Liste von Categorys, die aus der Firebase Realtime Database abgerufen werden.
+class CategoryProvider with ChangeNotifier {
+  /// Liste der Categorys, die angezeigt werden sollen
+  late List<Category> categories = [];
 
   /// Gibt an, ob Daten gerade geladen werden
   bool loading = false;
@@ -24,14 +24,14 @@ class PostProvider with ChangeNotifier {
     loading = true; // Setze den Ladezustand auf true
 
     try {
-      // Referenz zur "posts"-Datenbank
+      // Referenz zur "categories"-Datenbank
       // -> Die Kategorien des Users müssen in die Abfrage eingefügt werden oder nachträglich gefiltert werden
       // Optionen:
       //   Cloud-Functions - Komplex
       //   Filtern in der App
       //   Mehrere Calls und dann mergen
       DatabaseReference databaseReference =
-          FirebaseDatabase.instance.ref("posts");
+          FirebaseDatabase.instance.ref("categories");
 
       // Listener für Änderungen in der Realtime Database
       databaseReference.onValue.listen((event) {
@@ -54,13 +54,14 @@ class PostProvider with ChangeNotifier {
     if (data.value != null) {
       final jsonList = jsonDecode(jsonEncode(data.value)) as List<dynamic>;
       // Aktuell wird bei jeder Änderung die gesamte Liste neu geladen -> Optimierungspotential
-      posts = [];
+      categories = [];
       for (var json in jsonList) {
         if (json != null) {
           try {
-            posts.add(Post.fromJson(json)); // Füge Post zur Liste hinzu
+            categories
+                .add(Category.fromJson(json)); // Füge Category zur Liste hinzu
           } catch (e) {
-            logger.e('fromJson von Post fehlerhaft: $e');
+            logger.e('fromJson von Category fehlerhaft: $e');
           }
         }
       }
@@ -69,12 +70,11 @@ class PostProvider with ChangeNotifier {
       logger.e('API Zugriff fehlerhaft: keine Daten vorhanden.');
     }
 
-    // Füge einen Begrüssungspost hinzu, wenn keine Posts vorhanden sind
-    if (posts.isEmpty) {
-      posts.add(Post(
-          title: "Herzlich Willkommen",
-          body:
-              "In dieser App werden die News der Gemeinde Musterstadt angezeigt. Leider können aktuell keine Beiträge geladen werden. Wir bitten um Geduld."));
+    // Füge einen Begrüssungscategory hinzu, wenn keine Categorys vorhanden sind
+    if (categories.isEmpty) {
+      categories.add(Category(
+        name: "Default",
+      ));
     }
 
     loading = false; // Setze den Ladezustand auf false

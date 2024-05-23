@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gmd_app/firebase_options.dart';
+import 'package:gmd_app/providers/category_provider.dart';
+import 'package:gmd_app/screens/category_list_view.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +47,8 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider<PostProvider>(create: (_) => PostProvider())
+      ChangeNotifierProvider<PostProvider>(create: (_) => PostProvider()),
+      ChangeNotifierProvider<CategoryProvider>(create: (_) => CategoryProvider())
     ],
     child: const MyApp(),
   ));
@@ -78,7 +81,20 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const PostListView(title: 'Flutter Demo Home Page'),
+      //home: const PostListView(title: 'Flutter Demo Home Page'),
+      onGenerateRoute: (RouteSettings routeSettings){
+        return MaterialPageRoute(builder: (BuildContext context){
+          switch (routeSettings.name){
+            case PostListView.routeName:
+            return const PostListView(title: "News von Musterstadt",);     
+                   case CategoryListView.routeName:
+            return const CategoryListView(title: "Kategorien",);
+            default:
+            return const PostListView(title: "News von Musterstadt",);
+          }
+        }
+        );
+      },
     );
   }
 }
