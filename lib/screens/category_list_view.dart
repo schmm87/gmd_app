@@ -17,7 +17,7 @@ class CategoryListView extends StatefulWidget {
 class _CategoryListViewState extends State<CategoryListView> {
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
         appBar: AppBar(
           // TRY THIS: Try changing the color here to a specific color (to
           // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
@@ -38,8 +38,8 @@ class _CategoryListViewState extends State<CategoryListView> {
               );
             }
             // If loading is false then this code will show the list of todo item
-            final articles = value.categories;
-            return buildPosts(articles, 1);
+            final categories = value.categories;
+            return buildPosts(categories, 1);
           },
         ));
   }
@@ -59,6 +59,21 @@ class _CategoryListViewState extends State<CategoryListView> {
           child: Column(children: [
             ListTile(
               title: Text(item.name),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(item.isSubscribed
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank),
+                    onPressed: () {
+                      setState(() {
+                        item.isSubscribed = !item.isSubscribed;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ]),
         );

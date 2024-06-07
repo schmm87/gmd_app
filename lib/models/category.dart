@@ -6,6 +6,7 @@ class Category {
   /// Der Name der Category
   String name = "";
 
+  bool isSubscribed = false;
   /// Konstruktor der "Category"-Klasse.
   ///
   /// Erlaubt die Initialisierung einer Category mit optionalen Parametern für ID und Name.

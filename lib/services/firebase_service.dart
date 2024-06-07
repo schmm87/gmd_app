@@ -31,7 +31,7 @@ class FirebaseService {
       posts.add(Post(
               title: "Herzlich Willkommen",
               body:
-                  "In dieser App werden die News der Gemeinde Musterstadt angezeigt. Sie können verschiedene Kategorien abonnieren."));
+                  "In dieser App werden die News der Gemeinde Musterstadt angezeigt. Sie können verschiedene Kategorien abonnieren. Aktuell sind keine Information verfügbar - wir bitten um Geduld."));
     }
 
     return posts;

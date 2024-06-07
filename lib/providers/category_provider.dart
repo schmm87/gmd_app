@@ -1,5 +1,6 @@
 import 'dart:convert'; // Zum Dekodieren von JSON-Daten
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart'; // Firebase Realtime Database
 import 'package:flutter/material.dart'; // Flutter Material Design Komponenten
 import 'package:logger/logger.dart'; // Logging-Bibliothek
@@ -25,19 +26,33 @@ class CategoryProvider with ChangeNotifier {
 
     try {
       // Referenz zur "categories"-Datenbank
-      // -> Die Kategorien des Users müssen in die Abfrage eingefügt werden oder nachträglich gefiltert werden
-      // Optionen:
-      //   Cloud-Functions - Komplex
-      //   Filtern in der App
-      //   Mehrere Calls und dann mergen
       DatabaseReference databaseReference =
           FirebaseDatabase.instance.ref("categories");
+
+      final userUid = FirebaseAuth.instance.currentUser?.uid ?? 'default';
+      logger.i(userUid);
+
+      DatabaseReference databaseReferenceUsers =
+          FirebaseDatabase.instance.ref("users/$userUid");
+
+      final userSnapshot =
+          await databaseReferenceUsers.child("users/$userUid").get();
+      if (userSnapshot.exists) {
+        logger.i(userSnapshot.value);
+      } else {
+        logger.i('No data available.');
+      }
+
+      /*   await databaseReferenceUsers.set({
+          "id": userUid,
+          "categories": "1,3,7"
+        });*/
 
       // Listener für Änderungen in der Realtime Database
       databaseReference.onValue.listen((event) {
         DataSnapshot dataSnapshot = event.snapshot;
-        refreshData(
-            context, dataSnapshot); // Aktualisiere die Daten bei Änderungen
+        refreshData(context, dataSnapshot,
+            userSnapshot); // Aktualisiere die Daten bei Änderungen
       });
     } catch (e) {
       // Logge Fehler bei Zugriff auf die API
@@ -50,7 +65,12 @@ class CategoryProvider with ChangeNotifier {
   ///
   /// [context]: Der Kontext, in dem die Methode aufgerufen wird
   /// [data]: Die Daten, die von der Realtime Database abgerufen wurden
-  refreshData(context, DataSnapshot data) async {
+  refreshData(context, DataSnapshot data, DataSnapshot userData) async {
+    String userCategories = "";
+    if(userData.value != null){
+     userCategories =
+        jsonDecode(jsonEncode(userData.value))["categories"];
+    }
     if (data.value != null) {
       final jsonList = jsonDecode(jsonEncode(data.value)) as List<dynamic>;
       // Aktuell wird bei jeder Änderung die gesamte Liste neu geladen -> Optimierungspotential
@@ -58,8 +78,10 @@ class CategoryProvider with ChangeNotifier {
       for (var json in jsonList) {
         if (json != null) {
           try {
-            categories
-                .add(Category.fromJson(json)); // Füge Category zur Liste hinzu
+            final category = Category.fromJson(json);
+            category.isSubscribed =
+                userCategories.contains(category.id.toString());
+            categories.add(category); // Füge Category zur Liste hinzu
           } catch (e) {
             logger.e('fromJson von Category fehlerhaft: $e');
           }
