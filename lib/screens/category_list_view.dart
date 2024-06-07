@@ -28,28 +28,30 @@ class _CategoryListViewState extends State<CategoryListView> {
           title: Text(widget.title),
         ),
         body: Consumer<CategoryProvider>(
-          builder: (context, value, child) {
+          builder: (context, categoryProvider, child) {
             // If the loading it true then it will show the circular progressbar
 
-            if (value.loading || value.categories.isEmpty) {
-              value.getData(context);
+            if (categoryProvider.loading ||
+                categoryProvider.categories.isEmpty) {
+              categoryProvider.getData(context);
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
             // If loading is false then this code will show the list of todo item
-            final categories = value.categories;
-            return buildPosts(categories, 1);
+            final categories = categoryProvider.categories;
+            return buildPosts(categories, categoryProvider);
           },
         ));
   }
 
-  ListView buildPosts(List<Category> categories, int categoryId) {
+  ListView buildPosts(
+      List<Category> categories, CategoryProvider categoryProvider) {
     return ListView.builder(
       // Providing a restorationId allows the ListView to restore the
       // scroll position when a user leaves and returns to the app after it
       // has been killed while running in the background.
-      restorationId: 'postListView_$categoryId',
+      restorationId: 'postListView',
       itemCount: categories.length,
       itemBuilder: (BuildContext context, int index) {
         final item = categories[index];
@@ -62,14 +64,23 @@ class _CategoryListViewState extends State<CategoryListView> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Switch(
+                    value: categoryProvider.isSubscribed(item),
+                    onChanged: (bool value) {
+                      categoryProvider.toggleSubscription(item);
+                    },
+                    activeColor: Colors.green,
+                  ),
                   IconButton(
-                    icon: Icon(item.isSubscribed
-                        ? Icons.check_box
-                        : Icons.check_box_outline_blank),
+                    icon: Icon(
+                        categoryProvider.isNotify(item)
+                            ? Icons.notifications
+                            : Icons.notification_add_outlined,
+                        color: categoryProvider.isNotify(item)
+                            ? Colors.green
+                            : Colors.grey),
                     onPressed: () {
-                      setState(() {
-                        item.isSubscribed = !item.isSubscribed;
-                      });
+                      categoryProvider.toggleNotify(item);
                     },
                   ),
                 ],

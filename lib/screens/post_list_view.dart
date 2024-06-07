@@ -67,13 +67,13 @@ class _PostListViewState extends State<PostListView> {
       itemCount: posts.length,
       itemBuilder: (BuildContext context, int index) {
         final item = posts[index];
-
+        final text = item.body.replaceAll('\\n', '\n');
         return Card(
           color: Theme.of(context).colorScheme.surface,
           child: Column(children: [
             ListTile(
               title: Text(item.title),
-              subtitle: Text(item.body),
+              subtitle: Text(text),
             ),
           ]),
         );
