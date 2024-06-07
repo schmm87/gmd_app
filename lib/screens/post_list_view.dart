@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gmd_app/screens/category_list_view.dart';
 import 'package:provider/provider.dart';
 
@@ -24,10 +25,14 @@ class _PostListViewState extends State<PostListView> {
           // TRY THIS: Try changing the color here to a specific color (to
           // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
           // change color while the other colors stay the same.
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Colors.white,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
+          title: Row(children: [
+            SvgPicture.asset('assets/logo.svg', height:30),
+            SizedBox(width: 10), // Abstand zwischen Logo und Titel
+            Text(widget.title)],) ,
           actions: [
             IconButton(
               icon: const Icon(Icons.settings),
