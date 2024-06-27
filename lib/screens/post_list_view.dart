@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gmd_app/main.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gmd_app/screens/category_list_view.dart';
 import 'package:provider/provider.dart';
 
 import '../models/post.dart';
@@ -8,14 +9,7 @@ import '../providers/post_provider.dart';
 class PostListView extends StatefulWidget {
   const PostListView({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+  static const routeName = '/';
 
   final String title;
 
@@ -26,16 +20,31 @@ class PostListView extends StatefulWidget {
 class _PostListViewState extends State<PostListView> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           // TRY THIS: Try changing the color here to a specific color (to
           // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
           // change color while the other colors stay the same.
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Colors.white,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
+          title: Row(children: [
+            SvgPicture.asset('assets/logo.svg', height:30),
+            SizedBox(width: 10), // Abstand zwischen Logo und Titel
+            Text(widget.title)],) ,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                // Navigate to the settings page. If the user leaves and returns
+                // to the app after it has been killed while running in the
+                // background, the navigation stack is restored.
+                Navigator.restorablePushNamed(
+                    context, CategoryListView.routeName);
+              },
+            ),
+          ],
         ),
         body: Consumer<PostProvider>(
           builder: (context, value, child) {
@@ -63,12 +72,13 @@ class _PostListViewState extends State<PostListView> {
       itemCount: posts.length,
       itemBuilder: (BuildContext context, int index) {
         final item = posts[index];
-
+        final text = item.body.replaceAll('\\n', '\n');
         return Card(
+          color: Theme.of(context).colorScheme.surface,
           child: Column(children: [
             ListTile(
               title: Text(item.title),
-              subtitle: Text(item.body),
+              subtitle: Text(text),
             ),
           ]),
         );

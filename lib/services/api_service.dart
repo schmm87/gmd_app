@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:gmd_app/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
@@ -7,6 +6,8 @@ import '../models/post.dart';
 
 class ApiService {
   Future<List<Post>> getPosts(context) async {
+
+
     late List<Post> posts = [];
     var logger = Logger();
     try {
